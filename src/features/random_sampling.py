@@ -4,8 +4,8 @@ import os
 import random
 from spectrogram_dicts import build_class_dictionaries
 np.random.seed(15)  # for reproducibility
-access_key = os.environ['AWS_ACCESS_KEY_ID']
-access_secret_key = os.environ['AWS_SECRET_ACCESS_KEY']
+#access_key = os.environ['AWS_ACCESS_KEY_ID']
+#access_secret_key = os.environ['AWS_SECRET_ACCESS_KEY']
 
 
 """
@@ -217,10 +217,10 @@ def save_to_bucket(file, obj_name):
     """
     Saves local file to S3 bucket for redundancy and reproducibility.
     """
-    conn = boto.connect_s3(access_key, access_secret_key)
-    bucket = conn.get_bucket('depression-detect')
-    file_object = bucket.new_key(obj_name)
-    file_object.set_contents_from_filename(file)
+    # conn = boto.connect_s3(access_key, access_secret_key)
+    # bucket = conn.get_bucket('depression-detect')
+    # file_object = bucket.new_key(obj_name)
+    # file_object.set_contents_from_filename(file)
 
 
 if __name__ == '__main__':
@@ -242,7 +242,7 @@ if __name__ == '__main__':
 
     # upload npz files to S3 bucket for accessibility on AWS
     print("Uploading npz to S3...")
-    save_to_bucket('../../data/processed/train_samples.npz', 'train_samples.npz')
-    save_to_bucket('../../data/processed/train_labels.npz', 'train_labels.npz')
-    save_to_bucket('../../data/processed/test_samples.npz', 'test_samples.npz')
-    save_to_bucket('../../data/processed/test_labels.npz', 'test_labels.npz')
+    #save_to_bucket('../../data/processed/train_samples.npz', 'train_samples.npz')
+    #save_to_bucket('../../data/processed/train_labels.npz', 'train_labels.npz')
+    #save_to_bucket('../../data/processed/test_samples.npz', 'test_samples.npz')
+    #save_to_bucket('../../data/processed/test_labels.npz', 'test_labels.npz')

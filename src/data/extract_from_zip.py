@@ -55,16 +55,20 @@ def extract_files(zip_file, out_dir, delete_zip=False):
 
 if __name__ == '__main__':
     # directory containing DIAC-WOZ zip files
-    dir_name = '/Volumes/Seagate Backup Plus Drive/DAIC-WOZ/'
+    dir_name = '/Users/mengzengshan/PycharmProjects/persons/depression-detect/daic_woz/'
 
     # directory where audio and transcripts folders will be created
-    out_dir = '../../depression-detect/data/raw'
+    out_dir = '../../../depression-detect/data/raw'
 
     # delete zip file after file wav and csv extraction
     delete_zip = False
 
     # iterate through zip files in dir_name and extracts wav and transcripts
     for file in os.listdir(dir_name):
-        if file.endswith('.zip'):
-            zip_file = os.path.join(dir_name, file)
-            extract_files(zip_file, out_dir, delete_zip=delete_zip)
+        try:
+            if file.endswith('.zip'):
+                zip_file = os.path.join(dir_name, file)
+                extract_files(zip_file, out_dir, delete_zip=delete_zip)
+        except Exception as e:
+            print(e.message)
+            print(file)

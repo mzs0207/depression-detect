@@ -9,9 +9,7 @@ from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from keras.utils import np_utils
 from keras import backend as K
-K.set_image_dim_ordering('th')
-access_key = os.environ['AWS_ACCESS_KEY_ID']
-access_secret_key = os.environ['AWS_SECRET_ACCESS_KEY']
+
 np.random.seed(15)  # for reproducibility
 
 
@@ -23,14 +21,12 @@ participants (1). Using Theano backend and Theano image_dim_ordering:
 """
 
 
-def retrieve_from_bucket(file):
+def retrieve_from_file(file):
     """
-    Download spectrogram representation of matrices from S3 bucket.
+
+    :param file:
+    :return:
     """
-    conn = boto.connect_s3(access_key, access_secret_key)
-    bucket = conn.get_bucket('depression-detect')
-    file_key = bucket.get_key(file)
-    file_key.get_contents_to_filename(file)
     X = np.load(file)
     return X
 
@@ -72,14 +68,10 @@ def keras_img_prep(X_train, X_test, img_dep, img_rows, img_cols):
     For 'th' (Theano) dim_order, the model expects dimensions:
     (# channels, # images, # rows, # cols).
     """
-    if K.image_dim_ordering() == 'th':
-        X_train = X_train.reshape(X_train.shape[0], 1, img_rows, img_cols)
-        X_test = X_test.reshape(X_test.shape[0], 1, img_rows, img_cols)
-        input_shape = (1, img_rows, img_cols)
-    else:
-        X_train = X_train.reshape(X_train.shape[0], img_rows, img_cols, 1)
-        X_test = X_test.reshape(X_test.shape[0], img_rows, img_cols, 1)
-        input_shape = (img_rows, img_cols, 1)
+
+    X_train = X_train.reshape(X_train.shape[0], img_rows, img_cols, 1)
+    X_test = X_test.reshape(X_test.shape[0], img_rows, img_cols, 1)
+    input_shape = (img_rows, img_cols, 1)
     return X_train, X_test, input_shape
 
 
@@ -168,28 +160,22 @@ def standard_confusion_matrix(y_test, y_test_pred):
     return np.array([[tp, fp], [fn, tn]])
 
 
-def save_to_bucket(file, obj_name):
-    """
-    Saves local file to S3 bucket for redundancy and repreoducibility
-    by others.
-    """
-    conn = boto.connect_s3(access_key, access_secret_key)
 
-    bucket = conn.get_bucket('depression-detect')
-
-    file_object = bucket.new_key(obj_name)
-    file_object.set_contents_from_filename(file)
 
 
 if __name__ == '__main__':
-    model_id = input("Enter model id: ")
+    model_id = raw_input("Enter model id: ")
 
     # Load from S3 bucket
-    print('Retrieving from S3...')
-    X_train = retrieve_from_bucket('train_samples.npz')
-    y_train = retrieve_from_bucket('train_labels.npz')
-    X_test = retrieve_from_bucket('test_samples.npz')
-    y_test = retrieve_from_bucket('test_labels.npz')
+    # print('Retrieving from S3...')
+    # X_train = retrieve_from_bucket('train_samples.npz')
+    # y_train = retrieve_from_bucket('train_labels.npz')
+    # X_test = retrieve_from_bucket('test_samples.npz')
+    # y_test = retrieve_from_bucket('test_labels.npz')
+    X_train = retrieve_from_file('../../data/processed/train_samples.npz')
+    y_train = retrieve_from_file('../../data/processed/train_labels.npz')
+    X_test = retrieve_from_file('../../data/processed/test_samples.npz')
+    y_test = retrieve_from_file('../../data/processed/test_labels.npz')
 
     X_train, y_train, X_test, y_test = \
         X_train['arr_0'], y_train['arr_0'], X_test['arr_0'], y_test['arr_0']
@@ -240,11 +226,11 @@ if __name__ == '__main__':
     print("F1-Score: {}".format(f1_score))
 
     # plot train/test loss and accuracy. saves files in working dir
-    print('Saving plots...')
-    plot_loss(history, model_id)
-    plot_accuracy(history, model_id)
-    plot_roc_curve(y_test[:, 1], y_test_pred_proba[:, 1], model_id)
+    #print('Saving plots...')
+    #plot_loss(history, model_id)
+    #plot_accuracy(history, model_id)
+    #plot_roc_curve(y_test[:, 1], y_test_pred_proba[:, 1], model_id)
 
     # save model S3
     print('Saving model to S3...')
-    save_to_bucket(model_name, 'cnn_{}.h5'.format(model_id))
+    #save_to_bucket(model_name, 'cnn_{}.h5'.format(model_id))

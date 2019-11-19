@@ -6,7 +6,7 @@
 *.npz
 .DS_Store
 .wav
-
+venv
 # Folders
 /data/
 /references/
