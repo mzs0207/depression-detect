@@ -95,6 +95,7 @@ def cnn(X_train, y_train, X_test, y_test, batch_size,
 
     model.add(Flatten())
     model.add(Dense(512, activation='relu'))
+    model.add(Dropout(0.5))
     model.add(Dense(512, activation='relu'))
     model.add(Dropout(0.5))
 
@@ -183,7 +184,7 @@ if __name__ == '__main__':
     # CNN parameters
     batch_size = 32
     nb_classes = 2
-    epochs = 7
+    epochs = 1000
 
     # normalalize data and prep for Keras
     print('Processing images for Keras...')
